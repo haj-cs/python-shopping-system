@@ -1,0 +1,271 @@
+from pywebio.input import*
+from pywebio.output import*
+from pywebio import start_server
+from pywebio.pin import put_textarea
+ 
+#PAGES
+#Below I have used 'def' to define functions
+#Below are simple pages used to meet the wireframe
+#Used clear() to clear the page onto a new one
+#Used html and css to add nice fonts, colors, styles, texts, images and headings.
+#used lambda to pass on arguments quickly, small function without a name
+ 
+class Product: #used this to create product objects, where there is name, price, image and description
+    def __init__(self, name, price, image, description):
+        self.name = name
+        self.price = float(price)
+        self.image = image
+        self.description = description
+ 
+def register_page():
+    clear()
+    put_html("<h2 style='color:pink;'>Register Page</h2>")
+ 
+ 
+def checkout_page(): #this page contains the checkout form
+    clear()
+    put_buttons(['⬅'], xx=[basket_page]) #button to return back to the basket
+ 
+    put_html("<h2 style='color:pink;'>Checkout Page✅</h2>")
+ 
+    details = input_group("Enter your delivery details📦:", [ #this is a checkout form
+        input("Delivery Address", name="address"),
+        select("Delivery Options", options=["Standard (£3.99)", "Next-day (£6.99)", "Pick up (free)"], name="delivery"), #gave the user 3 options for delivery
+        input("Account Number", name="account"),
+        input("Sort Code", name="sort_code")
+ 
+    ])
+ 
+    put_success("Order Placed Successfully ✅")
+    put_text(f"Delivery to: {details['address']}")
+    put_text(f"Delivery options: {details['delivery']}")
+    put_text("Thankyou for shopping with us😁")
+ 
+ 
+ 
+#HOMEPAGE
+#This is the main page with logo, products, search bar and view buttons
+ 
+ 
+#Products with images, name and prices
+#Using put row and put column so they are next to each other and look neater
+# CSS to give them a border and  a shadow
+ 
+ 
+#LOGIN PAGE
+#The first screen the user sees
+ 
+def login_page():
+    put_html("<h1 style='color:pink;'> Welcome to AURA! "
+             "please log in👚</h1>")
+ 
+ 
+    user = input_group("login to your AURA account👛", [
+                input("Username", name="username"),
+                input("Password", type="password", name="password"),
+      ])
+#The login form
+ 
+    put_column([
+                put_buttons(['Forgot password?'], xx=[password_reset]),
+                put_buttons(['Register'], xx= [register_page])
+ 
+            ])
+ 
+    if user['username'] == "Hajir" and user['password']== "1234":
+        home_page()
+ 
+    else:
+        toast('❌Incorrect password or username. Please try again.', color='error')
+#using toast to have a little pop-up show
+ 
+    put_html("""
+        <div style=" position: fixed; bottom: 0;  width: 100%; background-color: #ffe6f0; padding: 12px; border-top: 2px solid #f3c2d6; display: flex; justify-content: center; gap: 30px; ">
+        </div>
+    """)
+#Using Html and CSS to make the buttons look better
+ 
+ 
+def profile_page():
+    clear()
+    put_buttons(['⬅'], xx=[home_page])
+    # using clear to clear the screen and show the profile content
+    put_html("<h2 style='color:pink;'>Profile Page</h2>")
+ 
+    put_html("""
+    <div style='text-align:center;'>
+        <img src='https://cdn-icons-png.flaticon.com/512/5557/5557402.png' width='100' style='border-radius: 50%;'><br><br>
+        <p><b>Name:</b> Hajir</p>
+        <p><b>Address:</b> 4 Ginger street, Newcastle Ne8 2al</p>
+        <p><b>Email:</b>hajir@northumbria.ac.uk</p>
+        <p><b>Bank details:</b> 34-55-23/87654321</p>
+    </div>
+    """)
+ 
+basket= [] #empty set so the products go in it
+def add_basket(product):
+    basket.append(product)
+    toast(f"{product.name} added to basket!")
+ 
+ 
+def basket_page():
+    clear()
+    put_buttons(['⬅'], xx=[home_page])
+    put_html("<h2 style='color:pink;'>Basket</h2>")
+ 
+    if not basket:
+        put_text("Your basket is empty.")
+ 
+        put_buttons(['Basket'], xx=[basket_page])
+ 
+    total = 0
+    for item in basket:
+        total += item.price #using notation
+        put_row([
+            put_html(f"<img src='{item.image}' width='100'>"),
+            put_text(f"{item.name} - £{item.price}")
+        ])
+ 
+    put_html(f"<h3> Total: £{total:.2f}</h3>")
+    put_buttons(['Checkout'], xx=[checkout_page])
+ 
+# PASSWORD RESET PAGE
+# This is the page where users can reset their passwords
+ 
+def password_reset():
+    clear()
+    put_buttons(['Back'], xx=[login_page])
+ 
+    put_html("<h2 style='color:pink;'>Reset your password here🗝️</h2>")
+    # Using html to put a heading
+    put_buttons(['⬅️'], xx=[login_page])
+ 
+    info = input_group("Password Reset", [
+        input("New Password", type="password", name="new_password"),
+        input("Confirm Password", type="password", name="confirm_password"),
+    ])
+    # Using input_group to ensure the username and password are within the same page
+ 
+    if info['new_password'] == info['confirm_password']:
+        put_success("Password Has Been Reset")
+    else:
+        put_text("Password does not match. Try again. ")
+ 
+ 
+# Using if and else to ensure the user knows if their password works or not
+ 
+ 
+# HOMEPAGE
+# This is the main page with logo, products, search bar and view buttons
+def home_page():
+    clear()
+    put_buttons(['⬅'], xx=[login_page])
+ 
+    put_html("""
+         <div style="text-align: center;">
+            <img src='https://i.pinimg.com/736x/e7/f2/eb/e7f2ebbb2e4829a216ca7ddc07208b6a.jpg' width='70' style='margin-bottom: 10px;'>
+        </div>
+    """)
+    put_html("<h1 style='color:hotpink; font-family:cursive;'>Welcome to AURA🥳</h1>")
+    # Logo and the welcome message done using html and CSS
+ 
+    put_html("""
+    <div style="text-align: center;">
+            <img src='https://media.istockphoto.com/id/1335187854/photo/female-models-of-different-ages-celebrating-their-natural-bodies.jpg?s=612x612&w=0&k=20&c=QDMzgeUfihJg6ULvaflEUZ43ZenbA01EQCnRvpqbWQw=' width='150' style='margin-bottom: 10px;'>
+        </div>
+    """)
+    # The featured products image
+ 
+    search = input("Search for products:", type="text")
+    put_row([
+        put_buttons(['Search'], xx=[lambda: put_text(f"You searched for: {search}")])
+    ])
+    # Search button
+ 
+    put_row([
+        put_column([
+            put_html("""
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 10px;
+                        width: 180px; margin: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-align: center;">
+            <img src= 'https://us.princesspolly.com/cdn/shop/files/1-modelinfo-Nat-us2_2b727268-32eb-4c3c-9478-999876c1d362_450x610_crop_center.jpg?v=1686268263' width='150'>
+            <h4>White Top<br>£12.99</h4>
+ 
+           """),
+            put_buttons(['View'], xx=[lambda: product_page(Product(
+                "White top",
+                "12.99",
+                "https://us.princesspolly.com/cdn/shop/files/1-modelinfo-Nat-us2_2b727268-32eb-4c3c-9478-999876c1d362_450x610_crop_center.jpg?v=1686268263",
+                "A basic white top suitable for spring/summer, size seen on  model is Small"
+            ))])
+        ]),
+        put_column([
+            put_html("""
+                 <div style="border: 1px solid #ddd; border-radius: 10px; padding: 10px;
+                        width: 180px; margin: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-align: center;">
+                <img src= 'https://cdn-img.prettylittlething.com/a/4/8/9/a489bf595384b7088eef84574e79a5ed1893d311_CMT7584_1_shape_white_woven_corset_crop_top.jpg?imwidth=600' width='150'>
+                <h4>White Corset Top<br>£15.99</h4>
+           """),
+            put_buttons(['View'], xx=[lambda: product_page(Product(
+                "White Corset Top",
+                "15.99",
+                "https://cdn-img.prettylittlething.com/a/4/8/9/a489bf595384b7088eef84574e79a5ed1893d311_CMT7584_1_shape_white_woven_corset_crop_top.jpg?imwidth=600",
+                "A basic white corset, size shown model is Medium"
+            ))])
+        ]),
+        put_column([
+            put_html("""
+             <div style="border: 1px solid #ddd; border-radius: 10px; padding: 10px;
+                        width: 180px; margin: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-align: center;">
+            <img src= 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdCokI6oJPIUWzcwd4clqeX_9ktkG_JaEEdw&s' width='150'>
+            <h4>White Tie-in front top <br>£10.99</h4>
+ 
+           """),
+            put_buttons(['View'], xx=[lambda: put_text("Loading details 🌀")])
+        ]),
+        put_column([
+            put_html("""
+             <div style="border: 1px solid #ddd; border-radius: 10px; padding: 10px;
+                        width: 180px; margin: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-align: center;">
+            <img src= 'https://www.joebrowns.co.uk/media/catalog/product/W/U/WU062A_1.jpg' width='150'>
+            <h4>Basic White Vest <br>£9.99</h4>
+           """),
+            put_buttons(['View'], xx=[lambda: put_text("Loading details 🌀")])
+        ])
+    ])
+    put_row([
+        put_buttons(['Home🏘️'], xx=[home_page]),
+        put_buttons(['Profile🤳🏻'], xx=[profile_page]),
+        put_buttons(['Basket🛒'], xx=[basket_page]),
+ 
+    ])
+ 
+ 
+ 
+# Products with images, name and prices
+# Using put row and put column so they are next to each other and look neater
+# CSS to give them a border and  a shadow
+ 
+ 
+def product_page(product: Product):
+    clear()
+    put_buttons(['⬅'], xx=[home_page]) # back button for the user
+    put_html(f"<h2 style= 'color:pink;'>{product.name}</h2>")
+    put_html(f"<img src='{product.image}' width ='150'>")
+    put_html(f"<p><b>Price:</b>£{product.price}</p>")
+    put_html(f"<p>{product.description}</p>")
+    put_buttons(['Add to basket'], xx=[lambda: add_basket(product)])
+    put_buttons(['Write a review'], xx=[review_page])
+ 
+ 
+ 
+def review_page():
+    clear()
+    put_buttons(['⬅️'], xx=[home_page])
+    put_html("<h2 style='color:pink;'>Write a Review</h2>")
+    put_textarea(label="Your review:", name="review_text") #creates a box for the user to sumbit a review
+    put_buttons(['Submit'], xx=[lambda: put_text("Thankyou for your review!")])
+ 
+ 
+if __name__ == '__main__':
+    start_server(login_page, port=8080)
+#This runs the pywebio server starting from the home page
